@@ -5,6 +5,11 @@
 npm install
 ```
 
+### Live Demo
+
+See [Live Demo](https://vue-rick-and-morty.vercel.app/)
+
+
 ### Compiles and hot-reloads for development
 ```
 npm run serve
