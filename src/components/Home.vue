@@ -4,7 +4,7 @@
       <input
         v-model="searchTerm"
         type="text"
-        placeholder="Say his name!, example: Heisemberg"
+        placeholder="Say his name!, example: Heisenberg"
       />
     </div>
 
