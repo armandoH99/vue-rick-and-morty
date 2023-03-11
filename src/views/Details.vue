@@ -7,13 +7,13 @@
           <img :src="character.image" :alt="character.name" />
         </div>
         <div class="big_card_details">
-          <h1>{{ character.name }}</h1>
-          <ul>
+          <h1>{{ character.mainname }}</h1>
+         <ul>
             <li><strong>gênero:</strong> {{ character.gender }}</li>
             <li><strong>Status:</strong> {{ character.status }}</li>
-            <li><strong>Planet:</strong> {{ character.origin.name }}</li>
             <li><strong>Species:</strong> {{ character.species }}</li>
-            <li><strong>Location:</strong> {{ character.location.name }}</li>
+            <li><strong>Planet:</strong> {{ character.originName }}</li>
+            <li><strong>Location:</strong> {{ character.locationName }}</li>
             <li>
               <strong>Episodes:</strong>
               <ul class="episodes-list">
@@ -25,7 +25,7 @@
                 </div>
               </ul>
             </li>
-          </ul>
+          </ul> 
         </div>
       </div>
     </div>

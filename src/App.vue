@@ -4,11 +4,13 @@
       <img src="./assets/textrickandmorty.png" class="logo" alt="..." />
     </div>
     <router-view :characters="characters" :episodes="episodes"></router-view>
+   
   </div>
 </template>
 
-<script>
+<script >
   import Home from "./components/Home.vue";
+  import axios from "axios";
 
   export default {
     name: "App",
@@ -21,67 +23,84 @@
         episodes: [],
       };
     },
-    created() {
-      // Characters
-      fetch("https://rickandmortyapi.com/api/character")
-        .then((response) => response.json())
-        .then((data) => {
-          this.characters = data.results;
 
-          //all characters
-          const promises = [];
-          for (let i = 2; i <= 42; i++) {
-            promises.push(
-              fetch(`https://rickandmortyapi.com/api/character?page=${i}`)
-            );
+    async mounted() {
+      this.getAllCharacters();
+      this.getAllEpisodes();
+    },
+    methods: {
+      async getAllCharacters() {
+        try {
+          const res = await axios.get(
+            "https://rickandmortyapi.com/api/character/"
+          );
+          const totalPages = res.data.info.pages;
+          let nextPageUrl = res.data.info.next;
+          let initialcharacters = res.data.results;
+
+          for (let i = 2; i <= totalPages; i++) {
+            const nextPageRes = await axios.get(nextPageUrl);
+            nextPageUrl = nextPageRes.data.info.next;
+            initialcharacters.push(...nextPageRes.data.results);
           }
-
-          Promise.all(promises)
-            .then((responses) =>
-              Promise.all(responses.map((response) => response.json()))
-            )
-            .then((data) => {
-              data.forEach((page) => {
-                this.characters = this.characters.concat(page.results);
-              });
+          const characters = initialcharacters.map(
+            ({
+              id,
+              name: mainname,
+              image,
+              status,
+              gender,
+              species,
+              episode,
+              location: { name: locationName },
+              origin: { name: originName },
+            }) => ({
+              id,
+              mainname,
+              image,
+              gender,
+              status,
+              species,
+              episode,
+              originName,
+              locationName,
             })
-            .catch((error) => {
-              console.error(error);
-            });
-        })
-        .catch((error) => {
-          console.error(error);
-        });
-      // episodes
-      fetch("https://rickandmortyapi.com/api/episode")
-        .then((response) => response.json())
-        .then((data) => {
-          this.episodes = data.results;
-          //all characters
-          const promises2 = [];
-          for (let i = 1; i <= 3; i++) {
-            promises2.push(
-              fetch(`https://rickandmortyapi.com/api/episode?page=${i}`)
-            );
+          );
+          // console.log(characters);
+          this.characters = characters;
+        } catch (e) {
+          console.log(e);
+        }
+      },
+      async getAllEpisodes() {
+        try {
+          const res = await axios.get(
+            "https://rickandmortyapi.com/api/episode"
+          );
+          const totalPages = res.data.info.pages;
+          // console.log(totalPages)
+          let nextPageUrl = res.data.info.next;
+          let initialepisodes = res.data.results;
+
+          for (let i = 2; i <= 3; i++) {
+            const nextPageRes = await axios.get(nextPageUrl);
+            nextPageUrl = nextPageRes.data.info.next;
+            initialepisodes.push(...nextPageRes.data.results);
           }
-
-          Promise.all(promises2)
-            .then((responses) =>
-              Promise.all(responses.map((response) => response.json()))
-            )
-            .then((data) => {
-              data.forEach((page) => {
-                this.episodes = this.episodes.concat(page.results);
-              });
+          const episodes = initialepisodes.map(
+            ({ id, name, url, episode }) => ({
+              id,
+              name,
+              url,
+              episode,
             })
-            .catch((error) => {
-              console.error(error);
-            });
-        })
-
-        .catch((error) => {
-          console.error(error);
-        });
+          );
+          console.log(episodes);
+          // this.episodes = episodes;
+        } catch (e) {
+          console.log(e);
+        }
+      },
     },
   };
 </script>
@@ -103,6 +122,9 @@
 
   ::-webkit-scrollbar-thumb {
     background: #888;
+  }
+  .red {
+    color: red;
   }
   body {
     font-family: "Poppins", sans-serif;
